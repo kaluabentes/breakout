@@ -10,18 +10,18 @@ export default class Painter {
     this.context = this.canvas.getContext("2d");
   }
 
-  /**
-   * Draws a circle on screen
-   * @param {object} circle The circle object
-   * @param {number} circle.x The x axis
-   * @param {number} circle.y The y axis
-   * @param {number} circle.radius The radius size
-   * @param {string} circle.color The fill color
-   */
   drawCircle(circle) {
     this.context.beginPath();
     this.context.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
     this.context.fillStyle = circle.color;
+    this.context.fill();
+    this.context.closePath();
+  }
+
+  drawSquare(square) {
+    this.context.beginPath();
+    this.context.rect(square.x, square.y, square.width, square.height);
+    this.context.fillStyle = square.color;
     this.context.fill();
     this.context.closePath();
   }
