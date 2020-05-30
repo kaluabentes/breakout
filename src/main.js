@@ -1,5 +1,7 @@
+import Game from "./core/Game";
+
 function main() {
-  alert("Hello world!");
+  const game = new Game("canvas");
 }
 
 document.addEventListener("DOMContentLoaded", main);
