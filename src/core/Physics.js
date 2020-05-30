@@ -16,6 +16,7 @@ export default class Physics {
       x: bounceVelocity,
       y: -bounceVelocity,
     };
+    this.paddle = options.paddle;
   }
 
   /**
@@ -24,18 +25,28 @@ export default class Physics {
    * @param {object} object.x current x axis
    * @param {object} object.y current y axis
    */
-  bounce(object) {
+  bounce(object, hitBottomCallback) {
     const radiusOffset = object.radius ? object.radius : 0;
 
-    // Top collision detection
-    if (
-      object.y + this.bounceVelocity.y < radiusOffset ||
-      object.y + this.bounceVelocity.y > this.canvasHeight - radiusOffset
-    ) {
+    // Y axis collision detection
+    if (object.y + this.bounceVelocity.y < radiusOffset) {
       this.bounceVelocity.y = -this.bounceVelocity.y;
+    } else if (
+      object.y + this.bounceVelocity.y >
+      this.canvasHeight - radiusOffset
+    ) {
+      if (
+        object.x > this.paddle.x - object.radius &&
+        object.x < this.paddle.x + this.paddle.width + object.radius
+      ) {
+        this.bounceVelocity.y = -this.bounceVelocity.y;
+        return;
+      }
+
+      hitBottomCallback();
     }
 
-    // Bottom collision detection
+    // X axis collision detection
     if (
       object.x + this.bounceVelocity.x > this.canvasWidth - radiusOffset ||
       object.x + this.bounceVelocity.x < radiusOffset
@@ -50,7 +61,8 @@ export default class Physics {
   moveX(object, direction) {
     switch (direction) {
       case "right": {
-        if (object.x + 10 > this.canvasWidth - object.width + 5) {
+        if (object.x + 10 > this.canvasWidth - object.width) {
+          object.x = this.canvasWidth - object.width;
           return;
         }
 
@@ -59,6 +71,7 @@ export default class Physics {
       }
       case "left": {
         if (object.x - 10 < -5) {
+          object.x = 0;
           return;
         }
 

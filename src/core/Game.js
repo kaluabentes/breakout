@@ -20,10 +20,19 @@ export default class Game {
     this.painter = new Painter(canvasId);
     const { canvas } = this.painter;
 
+    this.paddle = new Paddle(
+      canvas.width / 2 - PADDLE_WIDTH / 2,
+      canvas.height - PADDLE_HEIGHT,
+      PADDLE_WIDTH,
+      PADDLE_HEIGHT,
+      SHAPE_COLOR
+    );
+
     this.physics = new Physics({
       canvasHeight: canvas.height,
       canvasWidth: canvas.width,
       bounceVelocity: BOUNCE_VELOCITY,
+      paddle: this.paddle,
     });
 
     this.ball = new Ball(
@@ -33,22 +42,14 @@ export default class Game {
       SHAPE_COLOR
     );
 
-    this.paddle = new Paddle(
-      canvas.width / 2 - PADDLE_WIDTH / 2,
-      canvas.height - PADDLE_HEIGHT,
-      PADDLE_WIDTH,
-      PADDLE_HEIGHT,
-      SHAPE_COLOR
-    );
-
     this.input = new Input();
 
     const step = () => {
       this.draw();
-      window.requestAnimationFrame(step);
+      this.loop = window.requestAnimationFrame(step);
     };
 
-    window.requestAnimationFrame(step);
+    this.loop = window.requestAnimationFrame(step);
   }
 
   draw() {
@@ -62,6 +63,11 @@ export default class Game {
       this.physics.moveX(this.paddle, "right");
     }
 
-    this.physics.bounce(this.ball);
+    this.physics.bounce(this.ball, this.handleGameOver);
+  }
+
+  handleGameOver() {
+    alert("Game over");
+    window.cancelAnimationFrame(this.loop);
   }
 }
