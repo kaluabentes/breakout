@@ -96,7 +96,7 @@ export default class Game {
   start() {
     const step = () => {
       if (!this.draw()) {
-        // this.stop();
+        this.stop();
         return;
       }
 
