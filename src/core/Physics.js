@@ -1,3 +1,5 @@
+import sumArraysLength from "../utils/sumArraysLength";
+
 export default class Physics {
   /**
    * Basic physics feature
@@ -35,31 +37,39 @@ export default class Physics {
   bounce(object) {
     const radiusOffset = object.radius ? object.radius : 0;
 
-    // Y axis collision detection
+    // Detect if ball hits the top
     if (object.y + this.bounceVelocity.y < radiusOffset) {
       this.bounceVelocity.y = -this.bounceVelocity.y;
-    } else if (
-      object.y + this.bounceVelocity.y >
-      this.canvasHeight - radiusOffset
-    ) {
+    }
+    // Detect if ball hits the bottom
+    else if (object.y + this.bounceVelocity.y > this.canvasHeight) {
+      // Detect paddle collision
       if (
         object.x > this.paddle.x - object.radius &&
         object.x < this.paddle.x + this.paddle.width + object.radius
       ) {
         this.bounceVelocity.y = -this.bounceVelocity.y;
-        return true;
+
+        return {
+          stop: false,
+        };
       }
 
-      return false;
+      return {
+        stop: true,
+        message: "Game Over",
+      };
     }
 
-    // X axis collision detection
+    // Detect if ball hits horizontal sides
     if (
       object.x + this.bounceVelocity.x > this.canvasWidth - radiusOffset ||
       object.x + this.bounceVelocity.x < radiusOffset
     ) {
       this.bounceVelocity.x = -this.bounceVelocity.x;
     }
+
+    let bricksResponse = undefined;
 
     // Bricks collision detection
     this.bricks.forEach((rows, columnIndex) => {
@@ -73,11 +83,21 @@ export default class Physics {
           offsetY > brick.y &&
           offsetY < brick.y + brick.height
         ) {
-          delete this.bricks[columnIndex][rowIndex];
+          this.bricks[columnIndex].splice(rowIndex, 1);
+
+          if (sumArraysLength(this.bricks) === 0) {
+            bricksResponse = {
+              stop: true,
+              message: "Congratulations! You win!",
+            };
+          }
+
           this.bounceVelocity.y = -this.bounceVelocity.y;
         }
       });
     });
+
+    if (bricksResponse) return bricksResponse;
 
     object.x += this.bounceVelocity.x;
     object.y += this.bounceVelocity.y;

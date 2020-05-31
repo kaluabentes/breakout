@@ -12,7 +12,7 @@ const paddleHeight = 10;
 const shapeColor = "#0095DD";
 const bounceVelocity = 10;
 const paddleVelocity = 15;
-const brickRowCount = 6;
+const brickRowCount = 5;
 const brickColumnCount = 10;
 const brickWidth = 75;
 const brickHeight = 20;
@@ -97,9 +97,9 @@ export default class Game {
 
   start() {
     const step = () => {
-      if (!this.draw()) {
-        this.draw();
-        this.stop();
+      const payload = this.draw();
+      if (payload.stop) {
+        this.stop(payload.message);
         return;
       }
 
@@ -129,8 +129,8 @@ export default class Game {
     return this.physics.bounce(this.ball);
   }
 
-  stop() {
-    alert("Game Over");
+  stop(message) {
+    alert(message);
     document.location.reload();
     window.cancelAnimationFrame(this.animationRequestId);
     this.animationRequestId = undefined;
