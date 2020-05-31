@@ -17,6 +17,7 @@ export default class Physics {
       y: -bounceVelocity,
     };
     this.paddle = options.paddle;
+    this.bricks = options.bricks;
   }
 
   /**
@@ -53,6 +54,24 @@ export default class Physics {
     ) {
       this.bounceVelocity.x = -this.bounceVelocity.x;
     }
+
+    // Bricks collision detection
+    this.bricks.forEach((rows, columnIndex) => {
+      rows.forEach((brick, rowIndex) => {
+        const offsetX = object.x + this.bounceVelocity.x;
+        const offsetY = object.y + this.bounceVelocity.y;
+
+        if (
+          offsetX > brick.x &&
+          offsetX < brick.x + brick.width &&
+          offsetY > brick.y &&
+          offsetY < brick.y + brick.height
+        ) {
+          delete this.bricks[columnIndex][rowIndex];
+          this.bounceVelocity.y = -this.bounceVelocity.y;
+        }
+      });
+    });
 
     object.x += this.bounceVelocity.x;
     object.y += this.bounceVelocity.y;

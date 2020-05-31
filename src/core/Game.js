@@ -17,7 +17,6 @@ const brickWidth = 75;
 const brickHeight = 20;
 const brickPadding = 10;
 const brickOffsetTop = 30;
-const brickOffsetLeft = 30;
 
 export default class Game {
   /**
@@ -36,11 +35,24 @@ export default class Game {
       shapeColor
     );
 
+    this.calculateOffsetLeft();
+
+    this.bricks = this.generateBricks().map((rows, columnIndex) => {
+      return rows.map((brick, rowIndex) => {
+        const brickX =
+          columnIndex * (brick.width + brickPadding) + this.brickOffsetLeft;
+        const brickY =
+          rowIndex * (brick.height + brickPadding) + brickOffsetTop;
+        return new Brick(brickX, brickY, brickWidth, brickHeight);
+      });
+    });
+
     this.physics = new Physics({
       canvasHeight: canvas.height,
       canvasWidth: canvas.width,
       bounceVelocity,
       paddle: this.paddle,
+      bricks: this.bricks,
     });
 
     this.ball = new Ball(
@@ -52,28 +64,31 @@ export default class Game {
 
     this.input = new Input();
 
-    this.bricks = new Array(brickColumnCount).fill(
+    this.start();
+  }
+
+  generateBricks() {
+    return new Array(brickColumnCount).fill(
       new Array(brickRowCount).fill(
         new Brick(0, 0, brickWidth, brickHeight, shapeColor)
       )
     );
-
-    this.calculateOffsetLeft();
-
-    this.start();
   }
 
   calculateOffsetLeft() {
     const {
       canvas: { width },
     } = this.painter;
-    const bricksContainerWidth = this.bricks.reduce((prev, curr, index) => {
-      if (index === this.bricks.length - 1) {
-        return prev + brickWidth;
-      }
+    const bricksContainerWidth = this.generateBricks().reduce(
+      (prev, curr, index) => {
+        if (index === this.generateBricks().length - 1) {
+          return prev + brickWidth;
+        }
 
-      return prev + brickWidth + brickPadding;
-    }, 0);
+        return prev + brickWidth + brickPadding;
+      },
+      0
+    );
 
     this.brickOffsetLeft = (width - bricksContainerWidth) / 2;
   }
@@ -96,11 +111,8 @@ export default class Game {
     this.painter.drawCircle(this.ball);
     this.painter.drawSquare(this.paddle);
 
-    this.bricks.forEach((rows, columnIndex) => {
-      rows.forEach((brick, rowIndex) => {
-        brick.x =
-          columnIndex * (brick.width + brickPadding) + this.brickOffsetLeft;
-        brick.y = rowIndex * (brick.height + brickPadding) + brickOffsetTop;
+    this.bricks.forEach((rows) => {
+      return rows.forEach((brick) => {
         this.painter.drawSquare(brick);
       });
     });
