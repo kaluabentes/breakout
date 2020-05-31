@@ -21,7 +21,7 @@ export default class Physics {
   }
 
   /**
-   * Move a object to a direction
+   * Bounce an object and detect collisions
    * @param {object} object Object instance to be interact
    * @param {object} object.x current x axis
    * @param {object} object.y current y axis
@@ -78,6 +78,11 @@ export default class Physics {
     return true;
   }
 
+  /**
+   * Move an object in the x axis
+   * @param {object} object The object to move
+   * @param {string} direction The direction to move
+   */
   moveX(object, direction) {
     switch (direction) {
       case "right": {
