@@ -81,6 +81,7 @@ export default class Game {
     const {
       canvas: { width },
     } = this.painter;
+
     const bricksContainerWidth = this.generateBricks().reduce(
       (prev, curr, index) => {
         if (index === this.generateBricks().length - 1) {
@@ -97,9 +98,10 @@ export default class Game {
 
   start() {
     const step = () => {
-      const payload = this.draw();
-      if (payload.stop) {
-        this.stop(payload.message);
+      const { stop, message } = this.draw();
+
+      if (stop) {
+        this.stop(message);
         return;
       }
 

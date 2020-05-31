@@ -101,7 +101,10 @@ export default class Physics {
 
     object.x += this.bounceVelocity.x;
     object.y += this.bounceVelocity.y;
-    return true;
+
+    return {
+      stop: false,
+    };
   }
 
   /**
