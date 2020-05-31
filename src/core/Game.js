@@ -11,8 +11,8 @@ const paddleWidth = 150;
 const paddleHeight = 10;
 const shapeColor = "#0095DD";
 const bounceVelocity = 10;
-const brickRowCount = 3;
-const brickColumnCount = 5;
+const brickRowCount = 6;
+const brickColumnCount = 10;
 const brickWidth = 75;
 const brickHeight = 20;
 const brickPadding = 10;
@@ -58,13 +58,30 @@ export default class Game {
       )
     );
 
+    this.calculateOffsetLeft();
+
     this.start();
+  }
+
+  calculateOffsetLeft() {
+    const {
+      canvas: { width },
+    } = this.painter;
+    const bricksContainerWidth = this.bricks.reduce((prev, curr, index) => {
+      if (index === this.bricks.length - 1) {
+        return prev + brickWidth;
+      }
+
+      return prev + brickWidth + brickPadding;
+    }, 0);
+
+    this.brickOffsetLeft = (width - bricksContainerWidth) / 2;
   }
 
   start() {
     const step = () => {
       if (!this.draw()) {
-        this.stop();
+        // this.stop();
         return;
       }
 
@@ -78,6 +95,15 @@ export default class Game {
     this.painter.clear();
     this.painter.drawCircle(this.ball);
     this.painter.drawSquare(this.paddle);
+
+    this.bricks.forEach((rows, columnIndex) => {
+      rows.forEach((brick, rowIndex) => {
+        brick.x =
+          columnIndex * (brick.width + brickPadding) + this.brickOffsetLeft;
+        brick.y = rowIndex * (brick.height + brickPadding) + brickOffsetTop;
+        this.painter.drawSquare(brick);
+      });
+    });
 
     if (this.input.isLeftKeyPressed) {
       this.physics.moveX(this.paddle, "left");
