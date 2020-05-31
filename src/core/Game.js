@@ -11,6 +11,7 @@ const paddleWidth = 150;
 const paddleHeight = 10;
 const shapeColor = "#0095DD";
 const bounceVelocity = 10;
+const paddleVelocity = 15;
 const brickRowCount = 6;
 const brickColumnCount = 10;
 const brickWidth = 75;
@@ -51,6 +52,7 @@ export default class Game {
       canvasHeight: canvas.height,
       canvasWidth: canvas.width,
       bounceVelocity,
+      paddleVelocity,
       paddle: this.paddle,
       bricks: this.bricks,
     });
@@ -96,6 +98,7 @@ export default class Game {
   start() {
     const step = () => {
       if (!this.draw()) {
+        this.draw();
         this.stop();
         return;
       }

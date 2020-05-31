@@ -9,13 +9,19 @@ export default class Physics {
    * @param {number} options.initialOffset.y y axis
    */
   constructor(options) {
-    const { canvasHeight, canvasWidth, bounceVelocity } = options;
+    const {
+      canvasHeight,
+      canvasWidth,
+      bounceVelocity,
+      paddleVelocity,
+    } = options;
     this.canvasHeight = options.canvasHeight;
     this.canvasWidth = options.canvasWidth;
     this.bounceVelocity = {
       x: bounceVelocity,
       y: -bounceVelocity,
     };
+    this.paddleVelocity = paddleVelocity;
     this.paddle = options.paddle;
     this.bricks = options.bricks;
   }
@@ -86,21 +92,21 @@ export default class Physics {
   moveX(object, direction) {
     switch (direction) {
       case "right": {
-        if (object.x + 10 > this.canvasWidth - object.width) {
+        if (object.x + this.paddleVelocity > this.canvasWidth - object.width) {
           object.x = this.canvasWidth - object.width;
           return;
         }
 
-        object.x += 10;
+        object.x += this.paddleVelocity;
         return;
       }
       case "left": {
-        if (object.x - 10 < -5) {
+        if (object.x - this.paddleVelocity < -5) {
           object.x = 0;
           return;
         }
 
-        object.x -= 10;
+        object.x -= this.paddleVelocity;
       }
     }
   }
