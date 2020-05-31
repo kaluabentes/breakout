@@ -4,12 +4,20 @@ import Input from "./Input";
 
 import Ball from "../objects/Ball";
 import Paddle from "../objects/Paddle";
+import Brick from "../objects/Brick";
 
-const BALL_RADIUS = 10;
-const PADDLE_WIDTH = 150;
-const PADDLE_HEIGHT = 10;
-const SHAPE_COLOR = "#0095DD";
-const BOUNCE_VELOCITY = 10;
+const ballRadius = 10;
+const paddleWidth = 150;
+const paddleHeight = 10;
+const shapeColor = "#0095DD";
+const bounceVelocity = 10;
+const brickRowCount = 3;
+const brickColumnCount = 5;
+const brickWidth = 75;
+const brickHeight = 20;
+const brickPadding = 10;
+const brickOffsetTop = 30;
+const brickOffsetLeft = 30;
 
 export default class Game {
   /**
@@ -21,35 +29,49 @@ export default class Game {
     const { canvas } = this.painter;
 
     this.paddle = new Paddle(
-      canvas.width / 2 - PADDLE_WIDTH / 2,
-      canvas.height - PADDLE_HEIGHT,
-      PADDLE_WIDTH,
-      PADDLE_HEIGHT,
-      SHAPE_COLOR
+      canvas.width / 2 - paddleWidth / 2,
+      canvas.height - paddleHeight,
+      paddleWidth,
+      paddleHeight,
+      shapeColor
     );
 
     this.physics = new Physics({
       canvasHeight: canvas.height,
       canvasWidth: canvas.width,
-      bounceVelocity: BOUNCE_VELOCITY,
+      bounceVelocity,
       paddle: this.paddle,
     });
 
     this.ball = new Ball(
       canvas.width / 2,
       canvas.height - 30,
-      BALL_RADIUS,
-      SHAPE_COLOR
+      ballRadius,
+      shapeColor
     );
 
     this.input = new Input();
 
+    this.bricks = new Array(brickColumnCount).fill(
+      new Array(brickRowCount).fill(
+        new Brick(0, 0, brickWidth, brickHeight, shapeColor)
+      )
+    );
+
+    this.start();
+  }
+
+  start() {
     const step = () => {
-      this.draw();
-      this.loop = window.requestAnimationFrame(step);
+      if (!this.draw()) {
+        this.stop();
+        return;
+      }
+
+      this.animationRequestId = window.requestAnimationFrame(step);
     };
 
-    this.loop = window.requestAnimationFrame(step);
+    this.animationRequestId = window.requestAnimationFrame(step);
   }
 
   draw() {
@@ -63,11 +85,13 @@ export default class Game {
       this.physics.moveX(this.paddle, "right");
     }
 
-    this.physics.bounce(this.ball, this.handleGameOver);
+    return this.physics.bounce(this.ball);
   }
 
-  handleGameOver() {
-    alert("Game over");
-    window.cancelAnimationFrame(this.loop);
+  stop() {
+    alert("Game Over");
+    document.location.reload();
+    window.cancelAnimationFrame(this.animationRequestId);
+    this.animationRequestId = undefined;
   }
 }

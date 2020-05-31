@@ -25,7 +25,7 @@ export default class Physics {
    * @param {object} object.x current x axis
    * @param {object} object.y current y axis
    */
-  bounce(object, hitBottomCallback) {
+  bounce(object) {
     const radiusOffset = object.radius ? object.radius : 0;
 
     // Y axis collision detection
@@ -40,10 +40,10 @@ export default class Physics {
         object.x < this.paddle.x + this.paddle.width + object.radius
       ) {
         this.bounceVelocity.y = -this.bounceVelocity.y;
-        return;
+        return true;
       }
 
-      hitBottomCallback();
+      return false;
     }
 
     // X axis collision detection
@@ -56,6 +56,7 @@ export default class Physics {
 
     object.x += this.bounceVelocity.x;
     object.y += this.bounceVelocity.y;
+    return true;
   }
 
   moveX(object, direction) {
