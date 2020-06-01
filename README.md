@@ -4,6 +4,8 @@
 
 A breakout game built with vanilla JavaScript
 
+[Live Here](https://ecstatic-curie-d6f49a.netlify.app/)
+
 ## Instructions
 
 - `yarn` to install dependencies;
